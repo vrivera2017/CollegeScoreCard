@@ -46,7 +46,7 @@ ui <- fluidPage(
                 label = "Select state(s)",
                 inline = TRUE,
                 choices = edited_state),
-  actionButton("goButton", "Go!"),
+  actionButton("goButton", "plot data!"),
   plotOutput("scatterplot")
 )
 
@@ -54,7 +54,9 @@ server <- function(input, output){
   output$scatterplot <- renderPlot({
     title <- "test plot"
     #filterdata <- filter(newdata, STABBR==input$state)
-    ggplot(data = newdata, aes_string(x=input$x, y=input$y)) + geom_point() #+ aes(color=input$state)
+    if (input$goButton == 0)
+      return()
+    isolate({ggplot(data = newdata, aes_string(x=input$x, y=input$y)) + geom_point()}) #+ aes(color=input$state)
   })
 }
 
