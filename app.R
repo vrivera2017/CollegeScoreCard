@@ -36,27 +36,30 @@ ggplot(data = filterpractice, aes(x=ADM_RATE_ALL, y=TUITIONFEE_IN)) + geom_point
 
 ui <- fluidPage(
   headerPanel("College Score Card Data"),
-  selectInput(inputId = "x", 
-              label = "Select a value for the x-axis", 
-              choices = c("Select a value"="",columnlistshort)), 
-  selectInput(inputId = "y", 
-              label = "Select a value for the y-axis", 
-              choices = c("Select a value"="",columnlistshort)), 
-  checkboxGroupInput(inputId = "state", 
-                label = "Select state(s)",
-                inline = TRUE,
-                choices = edited_state),
-  actionButton("goButton", "plot data!"),
-  plotOutput("scatterplot")
+  sidebarPanel(
+    selectInput(inputId = "x", 
+                label = "Select a value for the x-axis", 
+                choices = c("Select a value"="",columnlistshort)), 
+    selectInput(inputId = "y", 
+                label = "Select a value for the y-axis", 
+                choices = c("Select a value"="",columnlistshort)), 
+    checkboxGroupInput(inputId = "state", 
+                  label = "Select state(s)",
+                  inline = TRUE,
+                  choices = edited_state),
+    actionButton("goButton", "plot data!")),
+  mainPanel(
+    plotOutput("scatterplot"))
 )
 
 server <- function(input, output){
   output$scatterplot <- renderPlot({
     title <- "test plot"
-    #filterdata <- filter(newdata, STABBR==input$state)
+    filterdata <- filter(newdata, STABBR %in% input$state)
+    print(input$state)
     if (input$goButton == 0)
       return()
-    isolate({ggplot(data = newdata, aes_string(x=input$x, y=input$y)) + geom_point()}) #+ aes(color=input$state)
+    isolate({ggplot(data = filterdata, aes_string(x=input$x, y=input$y, color="STABBR")) + geom_point()}) 
   })
 }
 
